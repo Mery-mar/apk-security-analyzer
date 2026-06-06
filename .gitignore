@@ -1,0 +1,12 @@
+.env
+uploads/
+reports/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+tools/jadx/lib/
+tools/apktool.jar

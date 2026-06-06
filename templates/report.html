@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapport - {{ data.app_name }}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0e14; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; }
+
+  .header { background: #111722; border-bottom: 1px solid rgba(99,179,255,0.15); padding: 1rem 2rem; display: flex; align-items: center; gap: 12px; }
+  .header h1 { font-size: 1.1rem; font-weight: 700; }
+  .back-btn { margin-left: auto; background: rgba(99,179,255,0.1); color: #60a5fa; border: 1px solid rgba(99,179,255,0.2); padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 0.8rem; }
+
+  .container { max-width: 1000px; margin: 2rem auto; padding: 0 1.5rem; }
+
+  .score-hero { background: #111722; border: 1px solid rgba(99,179,255,0.12); border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 2rem; }
+  .score-circle { width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; flex-shrink: 0; }
+  .score-num { font-size: 1.8rem; font-weight: 800; font-family: monospace; }
+  .score-label { font-size: 0.6rem; color: rgba(255,255,255,0.6); }
+  .app-info h2 { font-size: 1.3rem; margin-bottom: 4px; }
+  .app-meta { font-family: monospace; font-size: 0.7rem; color: #64748b; display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; }
+  .level-badge { display: inline-block; padding: 4px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; font-family: monospace; margin-top: 8px; }
+
+  .CRITIQUE { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+  .ELEVE    { background: rgba(249,115,22,0.15); color: #fb923c; border: 1px solid rgba(249,115,22,0.3); }
+  .MOYEN    { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+  .FAIBLE   { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+  .MINIMAL  { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+  .stat { background: #111722; border: 1px solid rgba(99,179,255,0.12); border-radius: 10px; padding: 1rem; text-align: center; }
+  .stat .val { font-size: 1.5rem; font-weight: 700; font-family: monospace; display: block; }
+  .stat .lbl { font-size: 0.7rem; color: #64748b; margin-top: 4px; }
+
+  .section { background: #111722; border: 1px solid rgba(99,179,255,0.12); border-radius: 12px; padding: 1.3rem; margin-bottom: 1.2rem; }
+  .section-title { font-family: monospace; font-size: 0.63rem; color: #64748b; letter-spacing: 0.1em; margin-bottom: 1rem; }
+
+  .finding-item { padding: 8px 10px; border-radius: 6px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 10px; font-size: 0.82rem; }
+  .finding-HIGH   { background: rgba(239,68,68,0.08); border-left: 3px solid #ef4444; }
+  .finding-MEDIUM { background: rgba(245,158,11,0.08); border-left: 3px solid #f59e0b; }
+  .sev-badge { font-family: monospace; font-size: 0.6rem; padding: 2px 6px; border-radius: 3px; flex-shrink: 0; margin-top: 2px; }
+  .sev-HIGH   { background: rgba(239,68,68,0.2); color: #f87171; }
+  .sev-MEDIUM { background: rgba(245,158,11,0.2); color: #fbbf24; }
+  .finding-detail { flex: 1; }
+  .finding-type { font-weight: 600; color: #e2e8f0; }
+  .finding-desc { font-family: monospace; font-size: 0.7rem; color: #94a3b8; margin-top: 2px; }
+
+  .perm-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .perm-tag { font-family: monospace; font-size: 0.62rem; padding: 3px 8px; border-radius: 4px; }
+  .perm-danger { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+  .perm-normal { background: rgba(100,116,139,0.1); color: #94a3b8; border: 1px solid rgba(100,116,139,0.2); }
+
+  .comp-item { font-family: monospace; font-size: 0.7rem; padding: 5px 8px; background: rgba(245,158,11,0.08); border-radius: 5px; margin-bottom: 4px; color: #fbbf24; }
+  .comp-type { color: #94a3b8; margin-right: 6px; }
+
+  .flag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; margin-right: 8px; margin-bottom: 8px; }
+  .flag-danger { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+  .flag-warn   { background: rgba(245,158,11,0.1); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
+  .flag-ok     { background: rgba(16,185,129,0.1); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+
+  .json-btn { display: inline-block; margin-top: 1rem; background: rgba(99,179,255,0.1); color: #60a5fa; border: 1px solid rgba(99,179,255,0.2); padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 0.8rem; font-family: monospace; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span style="font-size:1.3rem">🛡️</span>
+  <h1>Rapport d'analyse — {{ data.app_name }}</h1>
+  <a href="/" class="back-btn">← Retour</a>
+</div>
+
+<div class="container">
+
+  <!-- Score Hero -->
+  {% set score = data.score %}
+  {% if score >= 80 %}{% set color = "#ef4444" %}{% elif score >= 60 %}{% set color = "#f97316" %}{% elif score >= 40 %}{% set color = "#f59e0b" %}{% else %}{% set color = "#10b981" %}{% endif %}
+
+  <div class="score-hero">
+    <div class="score-circle" style="border: 4px solid {{ color }}; background: {{ color }}18">
+      <span class="score-num" style="color:{{ color }}">{{ score }}</span>
+      <span class="score-label">/ 100</span>
+    </div>
+    <div class="app-info">
+      <h2>{{ data.app_name }}</h2>
+      <div class="app-meta">
+        <span>📦 {{ data.package }}</span>
+        <span>🏷️ v{{ data.version }}</span>
+        <span>🔢 {{ data.total_findings }} findings</span>
+      </div>
+      <span class="level-badge {{ data.risk_level }}">{{ data.risk_level }}</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat">
+      <span class="val" style="color:#f87171">{{ data.findings | selectattr('severity','eq','HIGH') | list | length }}</span>
+      <span class="lbl">Findings HIGH</span>
+    </div>
+    <div class="stat">
+      <span class="val" style="color:#fbbf24">{{ data.findings | selectattr('severity','eq','MEDIUM') | list | length }}</span>
+      <span class="lbl">Findings MEDIUM</span>
+    </div>
+    <div class="stat">
+      <span class="val" style="color:#60a5fa">{{ data.manifest.dangerous_permissions | length if data.manifest else 0 }}</span>
+      <span class="lbl">Perms dangereuses</span>
+    </div>
+    <div class="stat">
+      <span class="val" style="color:#a78bfa">{{ data.manifest.exported_components | length if data.manifest else 0 }}</span>
+      <span class="lbl">Composants exportés</span>
+    </div>
+  </div>
+
+  <!-- Flags debug/backup -->
+  {% if data.manifest %}
+  <div class="section">
+    <div class="section-title">FLAGS CRITIQUES</div>
+    <span class="flag {{ 'flag-danger' if data.manifest.is_debug else 'flag-ok' }}">
+      {{ '⚠' if data.manifest.is_debug else '✓' }} Debug mode {{ 'ACTIVÉ' if data.manifest.is_debug else 'désactivé' }}
+    </span>
+    <span class="flag {{ 'flag-warn' if data.manifest.allow_backup else 'flag-ok' }}">
+      {{ '⚠' if data.manifest.allow_backup else '✓' }} Backup ADB {{ 'AUTORISÉ' if data.manifest.allow_backup else 'désactivé' }}
+    </span>
+  </div>
+  {% endif %}
+
+  <!-- Findings -->
+  <div class="section">
+    <div class="section-title">TOUS LES FINDINGS ({{ data.total_findings }})</div>
+    {% for f in data.findings %}
+    <div class="finding-item finding-{{ f.severity }}">
+      <span class="sev-badge sev-{{ f.severity }}">{{ f.severity }}</span>
+      <div class="finding-detail">
+        <div class="finding-type">{{ f.type }}</div>
+        <div class="finding-desc">{{ f.detail }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Permissions -->
+  {% if data.manifest and data.manifest.all_permissions %}
+  <div class="section">
+    <div class="section-title">PERMISSIONS ({{ data.manifest.all_permissions | length }})</div>
+    <div class="perm-list">
+      {% for p in data.manifest.all_permissions %}
+        <span class="perm-tag {{ 'perm-danger' if p in data.manifest.dangerous_permissions else 'perm-normal' }}">{{ p.split('.')[-1] }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Composants exportés -->
+  {% if data.manifest and data.manifest.exported_components %}
+  <div class="section">
+    <div class="section-title">COMPOSANTS EXPORTÉS ({{ data.manifest.exported_components | length }})</div>
+    {% for c in data.manifest.exported_components %}
+    <div class="comp-item">
+      <span class="comp-type">[{{ c.type }}]</span>{{ c.name }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Static findings -->
+  {% if data.static and data.static.findings %}
+  <div class="section">
+    <div class="section-title">ANALYSE STATIQUE DU CODE ({{ data.static.total }} findings)</div>
+    {% for f in data.static.findings[:20] %}
+    <div class="finding-item finding-{{ f.severity }}">
+      <span class="sev-badge sev-{{ f.severity }}">{{ f.severity }}</span>
+      <div class="finding-detail">
+        <div class="finding-type">{{ f.type }}</div>
+        <div class="finding-desc">{{ f.file }}:{{ f.line }} — {{ f.snippet[:80] }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <a href="/api/report/{{ filename }}" class="json-btn" target="_blank">📄 Voir le JSON brut</a>
+
+</div>
+</body>
+</html>
