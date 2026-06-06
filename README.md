@@ -4,6 +4,13 @@ Système automatisé d'analyse de sécurité pour applications Android. Détecte
 
 > Projet réalisé dans le cadre du cours **4CIR - Intrusion & Sécurité Mobile**
 
+## 👩‍💻 Auteurs
+
+| Nom | GitHub |
+|---|---|
+| Fatima Ezzahra Zekri | — |
+| Marzouk Meryem | [@Mery-mar](https://github.com/Mery-mar) |
+
 ---
 
 ## 📋 Fonctionnalités
@@ -71,8 +78,18 @@ cd apk-security-analyzer
 ### 2. Installer les dépendances Python
 
 ```bash
-pip install requests flask flask-socketio python-dotenv jinja2 colorama
+pip install -r requirements.txt
 ```
+
+> Contenu de `requirements.txt` :
+> ```
+> requests==2.34.2
+> flask==3.1.3
+> flask-socketio==5.6.1
+> python-dotenv==1.2.2
+> jinja2==3.1.6
+> colorama==0.4.6
+> ```
 
 ### 3. Télécharger APKTool et JADX
 
